@@ -115,6 +115,9 @@ public class Test2 extends LinearOpMode {
         
         double lastSpeed = 1;
         // run until the end of the match (driver presses STOP)
+
+        elbow.setMode(DcMotor.RunMode.RUN_USING_ENCODER); // Initialize the motor to run using encoders
+
         while (opModeIsActive()) {
             double max;
             double speed = 1;
@@ -143,8 +146,20 @@ public class Test2 extends LinearOpMode {
             double leftBackPower   = axial - lateral + yaw;
             double rightBackPower  = axial + lateral - yaw;
             double armPower = up - down;
-            double elbowPower = 0;
-            if (gamepad1.left_bumper) {
+
+            elbow.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER); // Reset the encoder to 0 position
+            elbow.setMode(DcMotor.RunMode.RUN_TO_POSITION); // Assign motor to run to position
+            double resetPosition = 0;
+            double basketPosition = 154;
+            double clawPosition = 289;
+            elbow.setTargetPosition(385); // Each 385 ticks is one rotation
+            elbow.setPower(0.3); // At 30% power
+            while (Motor.isBusy()) {
+            // While the motor is still making its way to 385, do nothing
+            }
+
+           /* double elbowPower = 0;
+             if (gamepad1.left_bumper) {
                 elbowPower = 0.05;
                 elbow.setDirection(DcMotor.Direction.FORWARD);
             } else if (gamepad1.right_bumper) {
@@ -153,9 +168,10 @@ public class Test2 extends LinearOpMode {
             } else {
                 elbowPower = 0;
             }
-            if (gamepad1.dpad_up) {
+            */
+            if (gamepad1.left_bumper) {
                 claw.setPosition(0.5);
-            } else if (gamepad1.dpad_down) {
+            } else if (gamepad1.right_bumper) {
                 claw.setPosition(0);
             } else {
                 claw.setPosition(1);
