@@ -66,7 +66,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 @TeleOp(name="Basic: Omni Linear OpMode", group="Linear OpMode")
 
-public class Test2 extends LinearOpMode {
+public class Test extends LinearOpMode {
 
     // Declare OpMode members for each of the 4 motors.
     private ElapsedTime runtime = new ElapsedTime();
@@ -148,23 +148,26 @@ public class Test2 extends LinearOpMode {
             double armPower = up - down;
 
             elbow.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER); // Reset the encoder to 0 position
-            elbow.setMode(DcMotor.RunMode.RUN_TO_POSITION); // Assign motor to run to position
 
             if (gamepad1.dpad_left) {
                 elbow.setTargetPosition(0); // Reset position
                 elbow.setPower(0.3); // At 30% power
+                elbow.setMode(DcMotor.RunMode.RUN_TO_POSITION); // Assign motor to run to position
+                while (elbow.isBusy()) {
+                            // While the motor is still making its way to 385, do nothing
+                }
             } else if (gamepad1.dpad_up) {
                 elbow.setTargetPosition(154); // Basket position
                 elbow.setPower(0.3); // At 30% power
+                elbow.setMode(DcMotor.RunMode.RUN_TO_POSITION); // Assign motor to run to position
             } else if (gamepad1.dpad_right) {
                 elbow.setTargetPosition(289);  // Claw position
                 elbow.setPower(0.3); // At 30% power
+                elbow.setMode(DcMotor.RunMode.RUN_TO_POSITION); // Assign motor to run to position
             }
             // elbow.setTargetPosition(385); // Each 385 ticks is one rotation
             // elbow.setPower(0.3); // At 30% power
-            while (Motor.isBusy()) {
-            // While the motor is still making its way to 385, do nothing
-            }
+            
 
            /* double elbowPower = 0;
              if (gamepad1.left_bumper) {
@@ -192,7 +195,7 @@ public class Test2 extends LinearOpMode {
             max = Math.max(max, Math.abs(leftBackPower));
             max = Math.max(max, Math.abs(rightBackPower));
             max = Math.max(max, Math.abs(armPower));
-            max = Math.max(max, Math.abs(elbowPower));
+            //max = Math.max(max, Math.abs(elbowPower));
 
             if (max > 1) {
                 leftFrontPower  /= max;
@@ -234,7 +237,7 @@ public class Test2 extends LinearOpMode {
             leftBackDrive.setPower(leftBackPower);
             rightBackDrive.setPower(rightBackPower);
             arm.setPower(armPower);
-            elbow.setPower(elbowPower);
+            //elbow.setPower(elbowPower);
 
             // Show the elapsed game time and wheel power.
             telemetry.addData("Status", "Run Time: " + runtime.toString());
