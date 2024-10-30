@@ -115,7 +115,7 @@ public class Test extends LinearOpMode {
         
         double lastSpeed = 1;
         // run until the end of the match (driver presses STOP)
-
+        elbow.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER); // Reset the encoder to 0 position
         elbow.setMode(DcMotor.RunMode.RUN_USING_ENCODER); // Initialize the motor to run using encoders
 
         while (opModeIsActive()) {
@@ -147,27 +147,24 @@ public class Test extends LinearOpMode {
             double rightBackPower  = axial + lateral - yaw;
             double armPower = up - down;
 
-            elbow.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER); // Reset the encoder to 0 position
-
             if (gamepad1.dpad_left) {
                 elbow.setTargetPosition(0); // Reset position
                 elbow.setPower(0.3); // At 30% power
                 elbow.setMode(DcMotor.RunMode.RUN_TO_POSITION); // Assign motor to run to position
-                while (elbow.isBusy()) {
-                            // While the motor is still making its way to 385, do nothing
-                }
             } else if (gamepad1.dpad_up) {
-                elbow.setTargetPosition(154); // Basket position
+                elbow.setTargetPosition(1046); // Basket position
                 elbow.setPower(0.3); // At 30% power
                 elbow.setMode(DcMotor.RunMode.RUN_TO_POSITION); // Assign motor to run to position
             } else if (gamepad1.dpad_right) {
-                elbow.setTargetPosition(289);  // Claw position
+                elbow.setTargetPosition(1792);  // Claw position
                 elbow.setPower(0.3); // At 30% power
                 elbow.setMode(DcMotor.RunMode.RUN_TO_POSITION); // Assign motor to run to position
             }
             // elbow.setTargetPosition(385); // Each 385 ticks is one rotation
             // elbow.setPower(0.3); // At 30% power
-            
+            //while (elbow.isBusy()) {
+            // While the motor is still making its way to 385, do nothing
+            //}
 
            /* double elbowPower = 0;
              if (gamepad1.left_bumper) {
