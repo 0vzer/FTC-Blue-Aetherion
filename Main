@@ -168,19 +168,19 @@ public class Test extends LinearOpMode {
                 elbow.setMode(DcMotor.RunMode.RUN_TO_POSITION); // Assign motor to run to position
             }
 
-            if (gamepad2.dpad_left) {
+            if (gamepad2.x) {
                 arm.setDirection(DcMotor.Direction.FORWARD);
                 arm.setTargetPosition(0); // Reset position
                 arm.setPower(0.3); // At 30% power
                 arm.setMode(DcMotor.RunMode.RUN_TO_POSITION); // Assign motor to run to position
-            } else if (gamepad2.dpad_up) {
+            } else if (gamepad2.y) {
                 arm.setDirection(DcMotor.Direction.REVERSE);
-                arm.setTargetPosition((int)(537.7*5*100/360)); // Basket position
+                arm.setTargetPosition((int)(537.7*5*1/360)); // Basket position
                 arm.setPower(0.3); // At 30% power
                 arm.setMode(DcMotor.RunMode.RUN_TO_POSITION); // Assign motor to run to position
-            } else if (gamepad2.dpad_right) {
+            } else if (gamepad2.b) {
                 arm.setDirection(DcMotor.Direction.REVERSE);
-                arm.setTargetPosition((int)(537.7*5*180/360));  // Claw position
+                arm.setTargetPosition((int)(537.7*5*2/360));  // Claw position
                 arm.setPower(0.3); // At 30% power
                 arm.setMode(DcMotor.RunMode.RUN_TO_POSITION); // Assign motor to run to position
             }
@@ -197,7 +197,7 @@ public class Test extends LinearOpMode {
             max = Math.max(Math.abs(leftFrontPower), Math.abs(rightFrontPower));
             max = Math.max(max, Math.abs(leftBackPower));
             max = Math.max(max, Math.abs(rightBackPower));
-            max = Math.max(max, Math.abs(armPower));
+            //max = Math.max(max, Math.abs(armPower));
             //max = Math.max(max, Math.abs(elbowPower));
 
             if (max > 1) {
