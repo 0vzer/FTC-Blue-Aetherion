@@ -101,11 +101,27 @@ public class Test extends LinearOpMode {
         // when you first test your robot, push the left joystick forward and observe the direction the wheels turn.
         // Reverse the direction (flip FORWARD <-> REVERSE ) of any wheel that runs backward
         // Keep testing until ALL the wheels move the robot forward when you push the left joystick forward.
+        
+        // init drive motors
         leftFrontDrive.setDirection(DcMotor.Direction.REVERSE);
         leftBackDrive.setDirection(DcMotor.Direction.REVERSE);
         rightFrontDrive.setDirection(DcMotor.Direction.FORWARD);
         rightBackDrive.setDirection(DcMotor.Direction.FORWARD);
 
+        // init elbow motor
+        elbow.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER); // Reset the encoder to 0 position
+        elbow.setMode(DcMotor.RunMode.RUN_USING_ENCODER); // Initialize the motor to run using encoders
+        elbow.setDirection(DcMotor.Direction.FORWARD);
+        
+        // init arm motor
+        arm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER); // Reset the encoder to 0 position
+        arm.setMode(DcMotor.RunMode.RUN_USING_ENCODER); // Initialize the motor to run using encoders
+        arm.setDirection(DcMotor.Direction.FORWARD);
+        
+        // init claw servo
+        claw.scaleRange(0,1);
+        claw.setDirection(Servo.Direction.REVERSE);
+        
         // Wait for the game to start (driver presses START)
         telemetry.addData("Status", "Initialized");
         telemetry.update();
@@ -114,15 +130,14 @@ public class Test extends LinearOpMode {
         runtime.reset();
         
         double lastSpeed = 1;
-        // run until the end of the match (driver presses STOP)
-        elbow.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER); // Reset the encoder to 0 position
-        elbow.setMode(DcMotor.RunMode.RUN_USING_ENCODER); // Initialize the motor to run using encoders
-        arm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER); // Reset the encoder to 0 position
-        arm.setMode(DcMotor.RunMode.RUN_USING_ENCODER); // Initialize the motor to run using encoders
-        claw.scaleRange(0,1);
-        claw.setDirection(Servo.Direction.REVERSE);
 
+        // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
+            /* driving code
+             * this section only controls the 4 drive motors!
+             */
+             
+            // 4 speed settings
             double max;
             double speed = 1;
             if (gamepad1.y) {
@@ -140,8 +155,6 @@ public class Test extends LinearOpMode {
             double axial   = -gamepad1.left_stick_y;  // Note: pushing stick forward gives negative value
             double lateral =  gamepad1.left_stick_x;
             double yaw     =  gamepad1.right_stick_x;
-            //double up = gamepad1.left_trigger;
-            //double down = gamepad1.right_trigger;
 
             // Combine the joystick requests for each axis-motion to determine each wheel's power.
             // Set up a variable for each drive wheel to save the power level for telemetry.
@@ -149,65 +162,19 @@ public class Test extends LinearOpMode {
             double rightFrontPower = axial - lateral - yaw;
             double leftBackPower   = axial - lateral + yaw;
             double rightBackPower  = axial + lateral - yaw;
-            //double armPower = up - down;
-
-            if (gamepad2.dpad_left) {
-                elbow.setDirection(DcMotor.Direction.FORWARD);
-                elbow.setTargetPosition(0); // Reset position
-                elbow.setPower(0.3); // At 30% power
-                elbow.setMode(DcMotor.RunMode.RUN_TO_POSITION); // Assign motor to run to position
-            } else if (gamepad2.dpad_up) {
-                elbow.setDirection(DcMotor.Direction.REVERSE);
-                elbow.setTargetPosition((int)(537.7*5*100/360)); // Basket position
-                elbow.setPower(0.3); // At 30% power
-                elbow.setMode(DcMotor.RunMode.RUN_TO_POSITION); // Assign motor to run to position
-            } else if (gamepad2.dpad_right) {
-                elbow.setDirection(DcMotor.Direction.REVERSE);
-                elbow.setTargetPosition((int)(537.7*5*180/360));  // Claw position
-                elbow.setPower(0.3); // At 30% power
-                elbow.setMode(DcMotor.RunMode.RUN_TO_POSITION); // Assign motor to run to position
-            }
-
-            if (gamepad2.x) {
-                arm.setDirection(DcMotor.Direction.FORWARD);
-                arm.setTargetPosition(0); // Reset position
-                arm.setPower(0.3); // At 30% power
-                arm.setMode(DcMotor.RunMode.RUN_TO_POSITION); // Assign motor to run to position
-            } else if (gamepad2.y) {
-                arm.setDirection(DcMotor.Direction.REVERSE);
-                arm.setTargetPosition((int)(537.7*5*1/360)); // Basket position
-                arm.setPower(0.3); // At 30% power
-                arm.setMode(DcMotor.RunMode.RUN_TO_POSITION); // Assign motor to run to position
-            } else if (gamepad2.b) {
-                arm.setDirection(DcMotor.Direction.REVERSE);
-                arm.setTargetPosition((int)(537.7*5*2/360));  // Claw position
-                arm.setPower(0.3); // At 30% power
-                arm.setMode(DcMotor.RunMode.RUN_TO_POSITION); // Assign motor to run to position
-            }
-
-            if (gamepad2.left_bumper) {
-                claw.setPosition(0);
-            } else if (gamepad2.right_bumper) {
-                claw.setPosition(1);
-            }
-
-
+            
             // Normalize the values so no wheel power exceeds 100%
             // This ensures that the robot maintains the desired motion.
             max = Math.max(Math.abs(leftFrontPower), Math.abs(rightFrontPower));
             max = Math.max(max, Math.abs(leftBackPower));
             max = Math.max(max, Math.abs(rightBackPower));
-            //max = Math.max(max, Math.abs(armPower));
-            //max = Math.max(max, Math.abs(elbowPower));
 
             if (max > 1) {
                 leftFrontPower  /= max;
                 rightFrontPower /= max;
                 leftBackPower   /= max;
                 rightBackPower  /= max;
-               // armPower /= max;
             }
-
 
             // This is test code:
             //
@@ -231,15 +198,65 @@ public class Test extends LinearOpMode {
             rightFrontPower *= speed;
             leftBackPower *= speed;
             rightBackPower *= speed;
-            //armPower *= speed;
 
             // Send calculated power to wheels
             leftFrontDrive.setPower(leftFrontPower);
             rightFrontDrive.setPower(rightFrontPower);
             leftBackDrive.setPower(leftBackPower);
             rightBackDrive.setPower(rightBackPower);
-            //arm.setPower(armPower);
-            //elbow.setPower(elbowPower);
+            
+            /* manipulator code
+             * this section controls the elbow, arm, and claw!
+             */
+            
+            // elbow rotates to 3 different positions
+            int basketPosition = (int)(537.7*5*100/360);
+            int clawPosition = (int)(537.7*5*180/360);
+            elbow.setPower(0.3); // At 30% power
+            if (gamepad2.dpad_left) {
+                if (arm.getTargetPosition == ) { //check if arm is extended
+                    elbow.setTargetPosition(0);                     // Reset position
+                    elbow.setMode(DcMotor.RunMode.RUN_TO_POSITION); // Assign motor to run to position
+                } else {
+                    // maybe add some code to vibrate controller to indicate an error
+                }
+            } else if (gamepad2.dpad_up) {
+                if (//check if arm is extended) {
+                    elbow.setTargetPosition(basketPosition);       // Basket position
+                    elbow.setMode(DcMotor.RunMode.RUN_TO_POSITION); // Assign motor to run to position
+                } else {
+                    // maybe add some code to vibrate controller to indicate an error
+                }
+            } else if (gamepad2.dpad_right) {
+                if (//check if arm is extended) {
+                    elbow.setTargetPosition(clawPosition);          // Claw position
+                    elbow.setMode(DcMotor.RunMode.RUN_TO_POSITION); // Assign motor to run to position
+                } else {
+                    // maybe add some code to vibrate controller to indicate an error
+                }
+            }
+
+            // arm extends only when in basket position
+            arm.setPower(0.3); // At 30% power
+            if (gamepad2.x) {
+                if (elbow.getTargetPosition() == basketPosition) {  // it is only safe to extend the arm when in basket position!
+                    // TODO: figure out how many tics to extend linear slider to desired height
+                    arm.setTargetPosition(1000); // extend arm
+                    arm.setMode(DcMotor.RunMode.RUN_TO_POSITION); // Assign motor to run to position
+                } else {
+                    // maybe add some code to vibrate controller to indicate an error
+                }
+            } else if (gamepad2.y) {
+                arm.setTargetPosition(0); // retract arm
+                arm.setMode(DcMotor.RunMode.RUN_TO_POSITION); // Assign motor to run to position
+            }
+
+            // claw opens and closes
+            if (gamepad2.left_bumper) {
+                claw.setPosition(0);
+            } else if (gamepad2.right_bumper) {
+                claw.setPosition(1);
+            }
 
             // Show the elapsed game time and wheel power.
             telemetry.addData("Status", "Run Time: " + runtime.toString());
