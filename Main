@@ -66,7 +66,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 @TeleOp(name="Basic: Omni Linear OpMode", group="Linear OpMode")
 
-public class Test extends LinearOpMode {
+public class Test3 extends LinearOpMode {
 
     // Declare OpMode members for each of the 4 motors.
     private ElapsedTime runtime = new ElapsedTime();
@@ -111,12 +111,12 @@ public class Test extends LinearOpMode {
         // init elbow motor
         elbow.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER); // Reset the encoder to 0 position
         elbow.setMode(DcMotor.RunMode.RUN_USING_ENCODER); // Initialize the motor to run using encoders
-        elbow.setDirection(DcMotor.Direction.FORWARD);
+        elbow.setDirection(DcMotor.Direction.REVERSE);
         
         // init arm motor
         arm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER); // Reset the encoder to 0 position
         arm.setMode(DcMotor.RunMode.RUN_USING_ENCODER); // Initialize the motor to run using encoders
-        arm.setDirection(DcMotor.Direction.FORWARD);
+        arm.setDirection(DcMotor.Direction.REVERSE);
         
         // init claw servo
         claw.scaleRange(0,1);
@@ -211,44 +211,49 @@ public class Test extends LinearOpMode {
             
             // elbow rotates to 3 different positions
             int basketPosition = (int)(537.7*5*100/360);
-            int clawPosition = (int)(537.7*5*180/360);
-            elbow.setPower(0.3); // At 30% power
+            int clawPosition = (int)(537.7*5*200/360);
+            //elbow.setPower(0.3); // At 30% power
             if (gamepad2.dpad_left) {
-                if (arm.getTargetPosition == ) { //check if arm is extended
+                if (arm.getTargetPosition() == 0) { //check if arm is extended
                     elbow.setTargetPosition(0);                     // Reset position
                     elbow.setMode(DcMotor.RunMode.RUN_TO_POSITION); // Assign motor to run to position
+                    elbow.setPower(0.3); // At 30% power
                 } else {
                     // maybe add some code to vibrate controller to indicate an error
                 }
             } else if (gamepad2.dpad_up) {
-                if (//check if arm is extended) {
+                if (arm.getTargetPosition() == 0) { //check if arm is extended
                     elbow.setTargetPosition(basketPosition);       // Basket position
                     elbow.setMode(DcMotor.RunMode.RUN_TO_POSITION); // Assign motor to run to position
+                    elbow.setPower(0.3); // At 30% power
                 } else {
                     // maybe add some code to vibrate controller to indicate an error
                 }
             } else if (gamepad2.dpad_right) {
-                if (//check if arm is extended) {
+                if (arm.getTargetPosition() == 0) { //check if arm is extended
                     elbow.setTargetPosition(clawPosition);          // Claw position
                     elbow.setMode(DcMotor.RunMode.RUN_TO_POSITION); // Assign motor to run to position
+                    elbow.setPower(0.3); // At 30% power
                 } else {
                     // maybe add some code to vibrate controller to indicate an error
                 }
             }
 
             // arm extends only when in basket position
-            arm.setPower(0.3); // At 30% power
-            if (gamepad2.x) {
+            //arm.setPower(0.3); // At 30% power
+            if (gamepad2.y) {
                 if (elbow.getTargetPosition() == basketPosition) {  // it is only safe to extend the arm when in basket position!
                     // TODO: figure out how many tics to extend linear slider to desired height
-                    arm.setTargetPosition(1000); // extend arm
+                    arm.setTargetPosition(2750); // extend arm
                     arm.setMode(DcMotor.RunMode.RUN_TO_POSITION); // Assign motor to run to position
+                    arm.setPower(0.3); // At 30% power
                 } else {
                     // maybe add some code to vibrate controller to indicate an error
                 }
-            } else if (gamepad2.y) {
+            } else if (gamepad2.x) {
                 arm.setTargetPosition(0); // retract arm
                 arm.setMode(DcMotor.RunMode.RUN_TO_POSITION); // Assign motor to run to position
+                arm.setPower(0.3); // At 30% power
             }
 
             // claw opens and closes
@@ -262,6 +267,8 @@ public class Test extends LinearOpMode {
             telemetry.addData("Status", "Run Time: " + runtime.toString());
             telemetry.addData("Front left/Right", "%4.2f, %4.2f", leftFrontPower, rightFrontPower);
             telemetry.addData("Back  left/Right", "%4.2f, %4.2f", leftBackPower, rightBackPower);
+            telemetry.addData("Elbow target position", elbow.getTargetPosition());
+            telemetry.addData("Arm target position", arm.getTargetPosition());
             telemetry.addData("Servo Position", claw.getPosition());
             telemetry.update();
         }
